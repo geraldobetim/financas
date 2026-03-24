@@ -644,7 +644,8 @@ function rE(){
   document.getElementById('esl').textContent=fmt(sTot());
   // total faturas abertas
   const tf=totFaturas();
-  document.getElementById('total-faturas').textContent=fmt(tf);
+  const tfEl=document.getElementById('total-faturas');
+  if(tfEl)tfEl.textContent=fmt(tf);
   const ms5=[-4,-3,-2,-1,0].map(i=>ms(eI+i));
   const mx=Math.max(...ms5.map(x=>{const c=cM(x);return Math.max(c.e,c.s);}),1);
   document.getElementById('ech').innerHTML=ms5.map(x=>{const c=cM(x);const he=Math.round(c.e/mx*52);const hs=Math.round(c.s/mx*52);return`<div class="cg"><div class="cbp"><div class="cb e" style="width:13px;height:${he||2}px"></div><div class="cb s" style="width:13px;height:${hs||2}px"></div></div><div class="cm">${ml(x).slice(0,3)}</div></div>`;}).join('');
@@ -684,8 +685,6 @@ function rE(){
     }).join('');
   }else{el.innerHTML=ls.map(eH).join('');}
 }
-const eH=l=>{const c=D.cats.find(c=>c.n===l.cat);return`<div class="eti"><div class="tic">${c?.ic||'📌'}</div><div class="tii"><div class="tc2">${l.cat}${l.sub?' › '+l.sub:''}</div><div class="tds">${l.desc}</div></div><div class="tv ${l.tp==='entrada'?'e':'s'}">${l.tp==='entrada'?'+':'-'}${fmt(l.vl)}</div><button class="edel" onclick="dL('${l.id}')">✕</button></div>`;};
-
 // ORDENAÇÃO
 function opSort(){
   ['dd','da','vd','va'].forEach((k,i)=>{
