@@ -139,6 +139,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ftab-pill{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;border:1.5px solid var(--br);border-radius:22px;cursor:pointer;color:var(--tx2);background:none;transition:all .2s}
 .ftab-pill.on{border-color:var(--tl);color:var(--tl);background:rgba(45,212,176,.07)}
 .fab{position:fixed;bottom:86px;right:16px;background:var(--tl);border:none;border-radius:28px;padding:12px 20px;display:flex;align-items:center;gap:7px;color:#0d2525;font-size:14px;font-weight:700;cursor:pointer;z-index:190;box-shadow:0 4px 18px rgba(45,212,176,.3)}
+/* CARTÕES */
+.cc-wrap{display:flex;gap:10px;overflow-x:auto;padding:0 16px 4px;scrollbar-width:none}
+.cc-wrap::-webkit-scrollbar{display:none}
+.cc-card{min-width:200px;height:120px;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;flex-shrink:0;position:relative;overflow:hidden}
+.cc-card::after{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)}
+.cc-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px}
+.cc-limit{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.cc-val{font-size:18px;font-weight:700;color:#fff}
+.cc-digits{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:2px}
+.cc-add{min-width:120px;height:120px;border-radius:16px;border:1.5px dashed var(--br);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;flex-shrink:0;color:var(--tx3)}
+.cc-add svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8}
+.cc-add span{font-size:12px;font-weight:600}
+/* FORM PAGAMENTO */
+.fp-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.fp-btn{padding:9px 14px;border:1px solid var(--br);border-radius:20px;font-size:13px;font-weight:600;color:var(--tx3);background:none;cursor:pointer;transition:all .2s;font-family:inherit}
+.fp-btn.on{border-color:var(--tl);color:var(--tl);background:rgba(45,212,176,.08)}
+/* FATURA LINE */
+.fatura-line{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:0.5px solid var(--br);margin-top:10px;cursor:pointer}
+.fatura-line-l{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2)}
+.fatura-line-r{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--tl)}
+/* CORES CARTÃO */
+.cor-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.cor-opt{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s}
+.cor-opt.on{border-color:#fff;transform:scale(1.15)}
+/* STEPS */
+.step-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.step-num{font-size:12px;color:var(--tx3);font-weight:600}
+/* CONTA ORIGEM SELECT */
+.co-sel{width:100%;background:var(--bg3);border:0.5px solid var(--br);border-radius:var(--rs);padding:12px 13px;color:var(--tx);font-size:15px;outline:none;-webkit-appearance:none;cursor:pointer}
+.co-sel:focus{border-color:var(--tl)}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -212,8 +242,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- EXTRATO -->
 <div id="s-extrato" class="sc">
-  <div class="mn"><button class="ma" onclick="mE(-1)">‹</button><div class="ml" id="eml">—</div><button class="ma" onclick="mE(1)">›</button></div>
-  <div class="scard" style="margin-top:0;border-radius:var(--rs)"><div class="slbl">Saldo Total</div><div class="sval" style="font-size:25px"><span id="esl">R$ 0,00</span></div></div>
+  <div class="mn">
+    <button class="ma" onclick="mE(-1)">‹</button>
+    <div class="ml" id="eml">—</div>
+    <button class="ma" onclick="mE(1)">›</button>
+  </div>
+  <div style="position:relative">
+    <div class="scard" style="margin-top:0;border-radius:var(--rs)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="slbl">Saldo Total</div>
+          <div class="sval" style="font-size:25px"><span id="esl">R$ 0,00</span></div>
+        </div>
+        <button onclick="abrirCartoes()" style="background:rgba(45,212,176,.1);border:1px solid rgba(45,212,176,.2);border-radius:10px;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--tl)" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="3"/><path d="M1 10h22"/></svg>
+        </button>
+      </div>
+      <div class="fatura-line" onclick="abrirCartoes()">
+        <div class="fatura-line-l">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="3"/><path d="M1 10h22"/></svg>
+          Faturas em aberto
+        </div>
+        <div class="fatura-line-r"><span id="total-faturas">R$ 0,00</span> <span style="color:var(--tx3)">›</span></div>
+      </div>
+    </div>
+  </div>
   <div class="cw">
     <div style="font-size:12px;color:var(--tx2);margin-bottom:8px;font-weight:500">Entradas e Saídas</div>
     <div class="cbrs" id="ech"></div>
@@ -240,6 +293,76 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="ftgs"></div>
   <div id="eli"></div>
 </div>
+
+<!-- CARTÕES TELA -->
+<div id="s-cartoes" class="sc">
+  <div class="topb">
+    <div>
+      <button onclick="G('extrato')" style="background:none;border:none;color:var(--tl);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:4px;padding:0">← Voltar</button>
+      <div class="topb-t" style="font-size:19px">Cartões</div>
+    </div>
+  </div>
+  <div id="cc-lista" style="padding:0 0 16px"></div>
+</div>
+
+<!-- MODAL NOVO CARTÃO STEP 1: Cor -->
+<div class="mbg" id="mCC1"><div class="modal"><div class="mh"></div>
+  <div class="step-header"><div class="mt" style="margin-bottom:0">Novo Cartão</div><div class="step-num">1 / 3</div></div>
+  <div style="font-size:14px;color:var(--tx2);margin-bottom:16px">Escolha uma cor para o cartão</div>
+  <div class="cor-row" id="cor-row"></div>
+  <div style="margin-bottom:20px;border-radius:16px;height:100px;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;position:relative;overflow:hidden" id="cc-preview1">
+    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+    <div style="font-size:18px;font-weight:700;color:#fff" id="prev1-val">R$ 0,00</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:2px">•••• •••• •••• ••••</div>
+  </div>
+  <button class="bok" onclick="goStep2()">Continuar</button>
+</div></div>
+
+<!-- MODAL NOVO CARTÃO STEP 2: Dados -->
+<div class="mbg" id="mCC2"><div class="modal"><div class="mh"></div>
+  <div class="step-header"><div class="mt" style="margin-bottom:0">Novo Cartão</div><div class="step-num">2 / 3</div></div>
+  <div class="fld"><label>Apelido do cartão</label><input type="text" id="cc-apelido" placeholder="Ex: Nubank, Itaú Platinum..." oninput="updPreview2()"></div>
+  <div class="fld"><label>Banco / Instituição</label>
+    <div style="position:relative">
+      <input type="text" id="cc-banco-input" placeholder="Buscar banco..." oninput="filtrarBancos()" autocomplete="off" style="width:100%;background:var(--bg3);border:0.5px solid var(--br);border-radius:var(--rs);padding:12px 13px;color:var(--tx);font-size:15px;outline:none">
+      <div id="cc-banco-lista" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:0.5px solid var(--br);border-radius:var(--rs);max-height:200px;overflow-y:auto;z-index:100"></div>
+    </div>
+    <input type="hidden" id="cc-banco">
+  </div>
+  <div class="fld"><label>Últimos 4 dígitos</label><input type="number" id="cc-digitos" placeholder="0000" maxlength="4" oninput="updPreview2()"></div>
+  <div style="margin-bottom:20px;border-radius:16px;height:100px;display:flex;flex-direction:column;justify-content:space-between;padding:14px;position:relative;overflow:hidden" id="cc-preview2">
+    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.8)" id="prev2-banco">—</div>
+    <div>
+      <div style="font-size:18px;font-weight:700;color:#fff">R$ 0,00</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.6);letter-spacing:2px" id="prev2-digits">•••• •••• •••• ••••</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <button class="bok" style="background:var(--bg4);color:var(--tx2)" onclick="fM('mCC2');document.getElementById('mCC1').classList.add('open')">Voltar</button>
+    <button class="bok" onclick="goStep3()">Continuar</button>
+  </div>
+</div></div>
+
+<!-- MODAL NOVO CARTÃO STEP 3: Limites -->
+<div class="mbg" id="mCC3"><div class="modal"><div class="mh"></div>
+  <div class="step-header"><div class="mt" style="margin-bottom:0">Novo Cartão</div><div class="step-num">3 / 3</div></div>
+  <div class="fld"><label>Limite total (R$)</label><input type="number" id="cc-limite" placeholder="0,00" min="0" step="0.01"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="fld"><label>Dia de fechamento</label><input type="number" id="cc-fechamento" placeholder="Ex: 20" min="1" max="31"></div>
+    <div class="fld"><label>Dia de vencimento</label><input type="number" id="cc-vencimento" placeholder="Ex: 5" min="1" max="31"></div>
+  </div>
+  <div class="err" id="cc-err"></div>
+  <div style="display:flex;gap:10px">
+    <button class="bok" style="background:var(--bg4);color:var(--tx2)" onclick="fM('mCC3');document.getElementById('mCC2').classList.add('open')">Voltar</button>
+    <button class="bok" onclick="salvarCartao()">Confirmar</button>
+  </div>
+</div></div>
+
+<!-- MODAL FATURA CARTÃO -->
+<div class="mbg" id="mFatura"><div class="modal"><div class="mh"></div>
+  <div id="fatura-content"></div>
+</div></div>
 
 <!-- CATEGORIAS -->
 <div id="s-categorias" class="sc">
@@ -291,6 +414,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
   <div class="fld"><label>Categoria</label><select id="lc" onchange="uSL()"><option value="">Selecione tipo primeiro</option></select></div>
   <div class="fld"><label>Subcategoria (opcional)</label><select id="ls"><option value="">Nenhuma</option></select></div>
+  <div id="fp-wrap">
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:8px;font-weight:500">Forma de pagamento</div>
+    <div class="fp-row" id="fp-btns">
+      <button class="fp-btn" onclick="selFP('dinheiro')">Dinheiro</button>
+      <button class="fp-btn" onclick="selFP('pix')">Pix</button>
+      <button class="fp-btn" onclick="selFP('debito')">Débito</button>
+      <button class="fp-btn" onclick="selFP('transferencia')">Transferência</button>
+      <button class="fp-btn" onclick="selFP('boleto')">Boleto</button>
+      <button class="fp-btn" onclick="selFP('credito')">Cartão de crédito</button>
+    </div>
+    <div class="fld" id="co-wrap" style="display:none">
+      <label id="co-label">Conta de origem</label>
+      <select class="co-sel" id="lco"><option value="">Selecione</option></select>
+    </div>
+  </div>
   <div class="fld"><label>Data</label><input type="date" id="ldt"></div>
   <button class="bok" onclick="svL()">Confirmar</button>
   <button class="bca" onclick="fM('mL')">Cancelar</button>
@@ -395,12 +533,16 @@ function showSync(msg,cor){
   el.style.background=cor||'var(--tl2)';el.style.color=cor?'#fff':'var(--tl)';el.textContent=msg;el.style.display='block';
   if(msg==='✓ Salvo na nuvem'||msg.includes('Erro'))setTimeout(()=>el.style.display='none',2500);
 }
-let D={cats:[],lancs:[],plans:[]};
+let D={cats:[],lancs:[],plans:[],cartoes:[],contas:[]};
 let vis=true,cSel=null,eI=0,pI=0,srt='dd',ptb='t';
+let fpSel=''; // forma de pagamento selecionada
+let ccCorSel='#1a3c3c'; // cor cartão selecionada
 // filtro avançado
 let fTipos=new Set(),fCats=new Set();
-// temporário enquanto modal está aberto
 let fTiposT=new Set(),fCatsT=new Set();
+
+const BANCOS=['Banco do Brasil','Bradesco','Caixa Econômica Federal','Itaú','Santander','Nubank','Inter','C6 Bank','Sicoob','Sicredi','BTG Pactual','XP Investimentos','Next','Neon','PicPay','PagBank','Mercado Pago','Banco Safra','Banrisul','Bancoob','Banco BV','Banco Pan','Banco Votorantim','Modal','Original','Sofisa','Agibank','Banese','Banpará','Banestes','Daycoval','BMG','Banco ABC','BNP Paribas','Citibank','HSBC','JP Morgan','Scotiabank','Banco Rendimento','Banco Topázio','Banco Triângulo','Paraná Banco','Bari','Acesso','Ágora','Banco Digimais','BS2','Cora','Dock','Ebanx','Grafeno','Iugu','Juno','Matera','Pix Force','Stark Bank','Sumup','Zoop'];
+const CC_CORES=['#1a3c3c','#2d4a7a','#4a1a5c','#7a2d2d','#1a5c3c','#5c4a1a','#2d2d4a','#3c3c3c','#1a4a5c','#5c1a3c'];
 
 const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const fmt=v=>'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -434,14 +576,14 @@ async function load(){
     const r=await fetch(API,{method:'POST',body:JSON.stringify({action:'load',app:'financas',id:currentUser.uid})});
     const j=await r.json();
     if(j.ok&&j.data&&j.data[currentUser.uid]){
-      D=Object.assign({cats:[],lancs:[],plans:[]},j.data[currentUser.uid]);
+      D=Object.assign({cats:[],lancs:[],plans:[],cartoes:[],contas:[]},j.data[currentUser.uid]);
       showSync('✓ Dados carregados da nuvem');
     } else {
-      try{const rl=localStorage.getItem(SK+'_'+currentUser.uid);if(rl){const d=JSON.parse(rl);D=Object.assign({cats:[],lancs:[],plans:[]},d);}}catch(e){}
+      try{const rl=localStorage.getItem(SK+'_'+currentUser.uid);if(rl){const d=JSON.parse(rl);D=Object.assign({cats:[],lancs:[],plans:[],cartoes:[],contas:[]},d);}}catch(e){}
       showSync('✓ Dados locais carregados','#e8a020');
     }
   }catch(e){
-    try{const rl=localStorage.getItem(SK+'_'+currentUser.uid);if(rl){const d=JSON.parse(rl);D=Object.assign({cats:[],lancs:[],plans:[]},d);}}catch(e2){}
+    try{const rl=localStorage.getItem(SK+'_'+currentUser.uid);if(rl){const d=JSON.parse(rl);D=Object.assign({cats:[],lancs:[],plans:[],cartoes:[],contas:[]},d);}}catch(e2){}
     showSync('⚠ Offline - dados locais','#e8a020');
   }
   if(!D.cats.length)iC();render();
@@ -473,11 +615,18 @@ function render(){rH();rE();rC();rPl();document.getElementById('hdt').textConten
 function G(p){
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(n=>n.classList.remove('on'));
-  document.getElementById('s-'+p).classList.add('active');
+  document.getElementById('s-'+p)?.classList.add('active');
   document.getElementById('nb-'+p)?.classList.add('on');
   document.getElementById('fab').style.display=p==='extrato'?'flex':'none';
-  if(p==='home')rH();else if(p==='extrato')rE();else if(p==='categorias')rC();else if(p==='planejamento')rPl();
+  if(p==='home')rH();else if(p==='extrato')rE();else if(p==='categorias')rC();else if(p==='planejamento')rPl();else if(p==='cartoes')rCartoes();
 }
+
+const FP_LABEL={'dinheiro':'Dinheiro','pix':'Pix','debito':'Débito','transferencia':'Transferência','boleto':'Boleto','credito':'Cartão de crédito','':`—`};
+const eH=l=>{
+  const c=D.cats.find(c=>c.n===l.cat);
+  const fp=l.fp?`<span style="font-size:10px;color:var(--tx3);background:var(--bg4);padding:2px 7px;border-radius:10px;margin-left:4px">${FP_LABEL[l.fp]||l.fp}</span>`:'';
+  return`<div class="eti"><div class="tic">${c?.ic||'📌'}</div><div class="tii"><div class="tc2">${l.cat}${l.sub?' › '+l.sub:''}</div><div class="tds">${l.desc}${fp}</div></div><div class="tv ${l.tp==='entrada'?'e':'s'}">${l.tp==='entrada'?'+':'-'}${fmt(l.vl)}</div><button class="edel" onclick="dL('${l.id}')">✕</button></div>`;
+};
 
 function tv(){vis=!vis;rH();}
 function rH(){
@@ -496,6 +645,10 @@ function rE(){
   const m=ms(eI);
   document.getElementById('eml').textContent=ml(m);
   document.getElementById('esl').textContent=fmt(sTot());
+  // total faturas abertas
+  const tf=totFaturas();
+  const tfEl=document.getElementById('total-faturas');
+  if(tfEl)tfEl.textContent=fmt(tf);
   const ms5=[-4,-3,-2,-1,0].map(i=>ms(eI+i));
   const mx=Math.max(...ms5.map(x=>{const c=cM(x);return Math.max(c.e,c.s);}),1);
   document.getElementById('ech').innerHTML=ms5.map(x=>{const c=cM(x);const he=Math.round(c.e/mx*52);const hs=Math.round(c.s/mx*52);return`<div class="cg"><div class="cbp"><div class="cb e" style="width:13px;height:${he||2}px"></div><div class="cb s" style="width:13px;height:${hs||2}px"></div></div><div class="cm">${ml(x).slice(0,3)}</div></div>`;}).join('');
@@ -535,8 +688,6 @@ function rE(){
     }).join('');
   }else{el.innerHTML=ls.map(eH).join('');}
 }
-const eH=l=>{const c=D.cats.find(c=>c.n===l.cat);return`<div class="eti"><div class="tic">${c?.ic||'📌'}</div><div class="tii"><div class="tc2">${l.cat}${l.sub?' › '+l.sub:''}</div><div class="tds">${l.desc}</div></div><div class="tv ${l.tp==='entrada'?'e':'s'}">${l.tp==='entrada'?'+':'-'}${fmt(l.vl)}</div><button class="edel" onclick="dL('${l.id}')">✕</button></div>`;};
-
 // ORDENAÇÃO
 function opSort(){
   ['dd','da','vd','va'].forEach((k,i)=>{
@@ -584,21 +735,277 @@ function remTP(t){fTipos.delete(t);rE();}
 function remCat(n){fCats.delete(n);rE();}
 
 // LANÇAMENTOS
-function opL(){['ld','lv'].forEach(id=>document.getElementById(id).value='');document.getElementById('lt').value='';document.getElementById('lc').innerHTML='<option value="">Selecione tipo primeiro</option>';document.getElementById('ls').innerHTML='<option value="">Nenhuma</option>';document.getElementById('ldt').value=hj();document.getElementById('le').classList.remove('show');document.getElementById('lo').classList.remove('show');document.getElementById('mL').classList.add('open');}
+function opL(){
+  ['ld','lv'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lt').value='';
+  document.getElementById('lc').innerHTML='<option value="">Selecione tipo primeiro</option>';
+  document.getElementById('ls').innerHTML='<option value="">Nenhuma</option>';
+  document.getElementById('ldt').value=hj();
+  document.getElementById('le').classList.remove('show');
+  document.getElementById('lo').classList.remove('show');
+  fpSel='';
+  document.querySelectorAll('.fp-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('co-wrap').style.display='none';
+  document.getElementById('mL').classList.add('open');
+}
+
+function selFP(fp){
+  fpSel=fp;
+  document.querySelectorAll('.fp-btn').forEach(b=>b.classList.remove('on'));
+  event.target.classList.add('on');
+  const coWrap=document.getElementById('co-wrap');
+  const coSel=document.getElementById('lco');
+  const coLabel=document.getElementById('co-label');
+  if(fp==='credito'){
+    coLabel.textContent='Cartão de crédito';
+    coSel.innerHTML='<option value="">Selecione o cartão</option>'+
+      (D.cartoes||[]).map(c=>`<option value="${c.id}">${c.apelido} •••• ${c.digitos}</option>`).join('');
+    coWrap.style.display='block';
+  } else if(['pix','debito','transferencia','boleto'].includes(fp)){
+    coLabel.textContent='Conta de origem';
+    coSel.innerHTML='<option value="">Selecione a conta</option>'+
+      (D.contas||[]).map(c=>`<option value="${c.id}">${c.banco} - ${c.apelido}</option>`).join('');
+    coWrap.style.display='block';
+  } else {
+    coWrap.style.display='none';
+  }
+}
+
 function uCL(){const tp=document.getElementById('lt').value;const sel=document.getElementById('lc');if(!tp){sel.innerHTML='<option value="">Selecione tipo primeiro</option>';return;}sel.innerHTML=D.cats.filter(c=>cT(c)===tp).map(c=>`<option value="${c.n}">${c.ic} ${c.n}</option>`).join('');uSL();}
 function uSL(){const cat=D.cats.find(c=>c.n===document.getElementById('lc').value);document.getElementById('ls').innerHTML='<option value="">Nenhuma</option>'+(cat?.subs||[]).map(s=>`<option value="${s}">${s}</option>`).join('');}
+
 function svL(){
-  const desc=document.getElementById('ld').value.trim(),vl=parseFloat(document.getElementById('lv').value),tp=document.getElementById('lt').value,cat=document.getElementById('lc').value,sub=document.getElementById('ls').value,dt=document.getElementById('ldt').value;
+  const desc=document.getElementById('ld').value.trim();
+  const vl=parseFloat(document.getElementById('lv').value);
+  const tp=document.getElementById('lt').value;
+  const cat=document.getElementById('lc').value;
+  const sub=document.getElementById('ls').value;
+  const dt=document.getElementById('ldt').value;
+  const co=document.getElementById('lco').value;
   const e=document.getElementById('le');e.classList.remove('show');
   if(!desc){e.textContent='Informe a descrição.';e.classList.add('show');return;}
   if(!vl||vl<=0){e.textContent='Valor inválido.';e.classList.add('show');return;}
   if(!tp){e.textContent='Selecione o tipo.';e.classList.add('show');return;}
   if(!cat){e.textContent='Selecione a categoria.';e.classList.add('show');return;}
   if(!dt){e.textContent='Informe a data.';e.classList.add('show');return;}
-  D.lancs.push({id:uid(),desc,vl,tp,cat,sub,dt});save();document.getElementById('lo').classList.add('show');
+  const lanc={id:uid(),desc,vl,tp,cat,sub,dt,fp:fpSel,co};
+  D.lancs.push(lanc);
+  save();
+  document.getElementById('lo').classList.add('show');
   setTimeout(()=>{fM('mL');render();},700);
 }
 const dL=id=>{D.lancs=D.lancs.filter(l=>l.id!==id);save();rE();rH();rPl();};
+
+// ============ CARTÕES ============
+function totFaturas(){
+  const hoje=new Date();
+  let total=0;
+  (D.cartoes||[]).forEach(c=>{
+    const fat=faturaAtual(c);
+    total+=fat.total;
+  });
+  return total;
+}
+
+function faturaAtual(c){
+  // determina período da fatura atual
+  const hoje=new Date();
+  const dia=hoje.getDate();
+  const fech=parseInt(c.fechamento)||20;
+  let anoRef=hoje.getFullYear(),mesRef=hoje.getMonth()+1;
+  // se ainda não fechou, fatura é do mês atual; se já fechou, é do próximo
+  // lancs que entram na fatura: do dia seguinte ao fechamento do mês anterior até o fechamento deste mês
+  let dtInicio,dtFim;
+  if(dia<=fech){
+    // ainda dentro do ciclo atual: início = fechamento do mês anterior + 1
+    const mesAnt=mesRef===1?12:mesRef-1;
+    const anoAnt=mesRef===1?anoRef-1:anoRef;
+    dtInicio=`${anoAnt}-${String(mesAnt).padStart(2,'0')}-${String(fech+1).padStart(2,'0')}`;
+    dtFim=`${anoRef}-${String(mesRef).padStart(2,'0')}-${String(fech).padStart(2,'0')}`;
+  } else {
+    // já fechou: início = fechamento deste mês + 1, fatura do próximo mês
+    dtInicio=`${anoRef}-${String(mesRef).padStart(2,'0')}-${String(fech+1).padStart(2,'0')}`;
+    const mesProx=mesRef===12?1:mesRef+1;
+    const anoProx=mesRef===12?anoRef+1:anoRef;
+    dtFim=`${anoProx}-${String(mesProx).padStart(2,'0')}-${String(fech).padStart(2,'0')}`;
+  }
+  const lancs=D.lancs.filter(l=>l.fp==='credito'&&l.co===c.id&&l.dt>=dtInicio&&l.dt<=dtFim);
+  const total=lancs.reduce((s,l)=>s+l.vl,0);
+  return{total,lancs,dtInicio,dtFim};
+}
+
+function abrirCartoes(){
+  G('cartoes');
+  rCartoes();
+}
+
+function rCartoes(){
+  const el=document.getElementById('cc-lista');
+  let h='<div style="padding:0 16px 8px"><div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Meus Cartões</div>';
+  h+='<div class="cc-wrap">';
+  (D.cartoes||[]).forEach(c=>{
+    const fat=faturaAtual(c);
+    const usado=fat.total;
+    const lim=parseFloat(c.limite)||0;
+    h+=`<div class="cc-card" style="background:${c.cor}" onclick="verFatura('${c.id}')">
+      <div>
+        <div class="cc-name">${c.apelido}</div>
+        <div class="cc-limit">${c.banco}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:2px">Fatura atual</div>
+        <div class="cc-val">${fmt(usado)}</div>
+        <div class="cc-digits">•••• ${c.digitos||'••••'}</div>
+      </div>
+    </div>`;
+  });
+  h+=`<div class="cc-add" onclick="novoCartao()">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>Novo cartão</span>
+  </div></div></div>`;
+
+  // contas bancárias
+  h+='<div style="padding:0 16px"><div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;margin:16px 0 10px">Contas Bancárias</div>';
+  if((D.contas||[]).length){
+    D.contas.forEach(c=>{
+      h+=`<div style="background:var(--cd);border-radius:var(--rs);padding:14px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;font-weight:600">${c.apelido}</div>
+          <div style="font-size:12px;color:var(--tx3)">${c.banco}</div>
+        </div>
+        <button onclick="delConta('${c.id}')" style="background:none;border:none;color:var(--tx3);cursor:pointer;font-size:14px">✕</button>
+      </div>`;
+    });
+  } else {
+    h+='<div style="color:var(--tx3);font-size:13px;text-align:center;padding:16px">Nenhuma conta cadastrada</div>';
+  }
+  h+=`<button onclick="novaConta()" style="width:100%;background:none;border:1px dashed var(--br);border-radius:var(--rs);padding:13px;color:var(--tl);font-size:14px;font-weight:600;cursor:pointer;margin-top:4px">+ Nova conta bancária</button></div>`;
+  el.innerHTML=h;
+}
+
+function verFatura(id){
+  const c=D.cartoes.find(x=>x.id===id);if(!c)return;
+  const fat=faturaAtual(c);
+  const venc=c.vencimento;
+  let h=`<div style="background:${c.cor};border-radius:14px;padding:18px;margin-bottom:16px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+    <div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:4px">${c.apelido} · ${c.banco}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.6)">Vencimento dia ${venc} · Fechamento dia ${c.fechamento}</div>
+    <div style="font-size:28px;font-weight:800;color:#fff;margin:8px 0 4px">${fmt(fat.total)}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.6)">Fatura de ${new Date(fat.dtFim+'T12:00:00').toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}</div>
+  </div>`;
+  if(fat.lancs.length){
+    h+='<div style="font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Lançamentos</div>';
+    fat.lancs.sort((a,b)=>new Date(b.dt)-new Date(a.dt)).forEach(l=>{
+      const cat=D.cats.find(x=>x.n===l.cat);
+      h+=`<div class="eti"><div class="tic">${cat?.ic||'💳'}</div><div class="tii"><div class="tc2">${l.cat}${l.sub?' › '+l.sub:''} · ${new Date(l.dt+'T12:00:00').toLocaleDateString('pt-BR')}</div><div class="tds">${l.desc}</div></div><div class="tv s">-${fmt(l.vl)}</div></div>`;
+    });
+  } else {
+    h+='<div style="color:var(--tx3);font-size:13px;text-align:center;padding:20px">Nenhum lançamento nesta fatura</div>';
+  }
+  h+=`<button class="bca" onclick="fM('mFatura')" style="width:100%;margin-top:8px">Fechar</button>`;
+  document.getElementById('fatura-content').innerHTML=h;
+  document.getElementById('mFatura').classList.add('open');
+}
+
+function delCartao(id){
+  if(!confirm('Deletar este cartão?'))return;
+  D.cartoes=D.cartoes.filter(c=>c.id!==id);save();rCartoes();
+}
+
+// NOVO CARTÃO - 3 steps
+function novoCartao(){
+  ccCorSel=CC_CORES[0];
+  document.getElementById('cor-row').innerHTML=CC_CORES.map((cor,i)=>`<div class="cor-opt${i===0?' on':''}" style="background:${cor}" onclick="selCor('${cor}',this)"></div>`).join('');
+  document.getElementById('cc-preview1').style.background=ccCorSel;
+  document.getElementById('mCC1').classList.add('open');
+}
+
+function selCor(cor,el){
+  ccCorSel=cor;
+  document.querySelectorAll('.cor-opt').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('cc-preview1').style.background=cor;
+}
+
+function goStep2(){
+  fM('mCC1');
+  document.getElementById('cc-apelido').value='';
+  document.getElementById('cc-banco-input').value='';
+  document.getElementById('cc-banco').value='';
+  document.getElementById('cc-digitos').value='';
+  document.getElementById('cc-preview2').style.background=ccCorSel;
+  document.getElementById('prev2-banco').textContent='—';
+  document.getElementById('prev2-digits').textContent='•••• •••• •••• ••••';
+  document.getElementById('cc-banco-lista').style.display='none';
+  document.getElementById('mCC2').classList.add('open');
+}
+
+function filtrarBancos(){
+  const q=document.getElementById('cc-banco-input').value.trim().toLowerCase();
+  const lista=document.getElementById('cc-banco-lista');
+  if(!q){lista.style.display='none';return;}
+  const res=BANCOS.filter(b=>b.toLowerCase().includes(q)).slice(0,8);
+  if(!res.length){lista.style.display='none';return;}
+  lista.innerHTML=res.map(b=>`<div style="padding:11px 14px;cursor:pointer;border-bottom:0.5px solid var(--br);font-size:14px;color:var(--tx)" onclick="selBanco('${b}')">${b}</div>`).join('');
+  lista.style.display='block';
+}
+
+function selBanco(b){
+  document.getElementById('cc-banco-input').value=b;
+  document.getElementById('cc-banco').value=b;
+  document.getElementById('cc-banco-lista').style.display='none';
+  document.getElementById('prev2-banco').textContent=b;
+}
+
+function updPreview2(){
+  const ap=document.getElementById('cc-apelido').value||'—';
+  const dg=document.getElementById('cc-digitos').value||'••••';
+  document.getElementById('prev2-digits').textContent=`•••• •••• •••• ${dg}`;
+}
+
+function goStep3(){
+  const ap=document.getElementById('cc-apelido').value.trim();
+  const banco=document.getElementById('cc-banco').value.trim();
+  const dg=document.getElementById('cc-digitos').value.trim();
+  if(!ap||!banco){alert('Preencha o apelido e o banco.');return;}
+  fM('mCC2');
+  document.getElementById('cc-limite').value='';
+  document.getElementById('cc-fechamento').value='';
+  document.getElementById('cc-vencimento').value='';
+  document.getElementById('cc-err').classList.remove('show');
+  document.getElementById('mCC3').classList.add('open');
+}
+
+function salvarCartao(){
+  const ap=document.getElementById('cc-apelido').value.trim();
+  const banco=document.getElementById('cc-banco').value.trim();
+  const dg=document.getElementById('cc-digitos').value.trim();
+  const lim=parseFloat(document.getElementById('cc-limite').value)||0;
+  const fech=parseInt(document.getElementById('cc-fechamento').value);
+  const venc=parseInt(document.getElementById('cc-vencimento').value);
+  const err=document.getElementById('cc-err');
+  err.classList.remove('show');
+  if(!fech||fech<1||fech>31){err.textContent='Informe o dia de fechamento (1-31).';err.classList.add('show');return;}
+  if(!venc||venc<1||venc>31){err.textContent='Informe o dia de vencimento (1-31).';err.classList.add('show');return;}
+  D.cartoes.push({id:uid(),apelido:ap,banco,digitos:dg,cor:ccCorSel,limite:lim,fechamento:fech,vencimento:venc});
+  save();fM('mCC3');rCartoes();
+}
+
+// NOVA CONTA BANCÁRIA
+function novaConta(){
+  const apelido=prompt('Apelido da conta (Ex: Conta Principal):');
+  if(!apelido)return;
+  const banco=prompt('Banco (Ex: Nubank, Itaú...):');
+  if(!banco)return;
+  D.contas.push({id:uid(),apelido:apelido.trim(),banco:banco.trim()});
+  save();rCartoes();
+}
+
+function delConta(id){
+  if(!confirm('Deletar esta conta?'))return;
+  D.contas=D.contas.filter(c=>c.id!==id);save();rCartoes();
+}
 
 // CATEGORIAS
 function rC(){
